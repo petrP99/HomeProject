@@ -1,49 +1,45 @@
 package com.pers.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = {"id", "shopName", "card"})
-@ToString(exclude = {"client", "card"})
 @Builder
 @Entity
-public class Payment {
+public class Card {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String shopName;
-    private BigDecimal amount;
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private Client clientId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pay_by_client_id")
-    private Client client;
+    private Integer cardNo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pay_by_card_id")
-    private Card card;
+    private BigDecimal balance;
 
-    private LocalDateTime timeOfPay;
+    private LocalDate createdDate;
+
+    private LocalDate expireDate;
 
     @Enumerated(EnumType.STRING)
     private Status status;

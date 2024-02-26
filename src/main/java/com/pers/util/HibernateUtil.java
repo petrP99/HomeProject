@@ -16,7 +16,6 @@ import org.hibernate.cfg.Configuration;
 
 @UtilityClass
 public class HibernateUtil {
-
     public static SessionFactory buildSessionFactory() {
         Configuration configuration = new Configuration();
         configuration.setPhysicalNamingStrategy(new CamelCaseToUnderscoresNamingStrategy());
@@ -33,6 +32,13 @@ public class HibernateUtil {
         return configuration.buildSessionFactory();
     }
 
+    public static void startSession(Object object, SessionFactory sessionFactory) {
+        try (Session session1 = sessionFactory.openSession()) {
+            session1.beginTransaction();
+            session1.persist(object);
+            session1.getTransaction().commit();
+        }
+    }
 }
 
 

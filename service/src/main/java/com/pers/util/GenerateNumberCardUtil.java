@@ -10,7 +10,6 @@ public class GenerateNumberCardUtil {
     Set<Integer> numbersOfCards = new HashSet<>();
 
     public static Integer generateNumber() {
-
         int number = (int) (Math.random() * 10907 + Math.random() * 1000);
         if (numbersOfCards.add(number)) {
             return number;
@@ -20,6 +19,4 @@ public class GenerateNumberCardUtil {
             return newNumber;
         }
     }
-
-
 }

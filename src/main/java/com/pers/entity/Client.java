@@ -1,51 +1,43 @@
 package com.pers.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = {"id", "shopName", "card"})
-@ToString(exclude = {"client", "card"})
 @Builder
 @Entity
-public class Payment {
+public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String shopName;
-    private BigDecimal amount;
+    private Long userId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pay_by_client_id")
-    private Client client;
+    private BigDecimal balance;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pay_by_card_id")
-    private Card card;
+    private String firstName;
 
-    private LocalDateTime timeOfPay;
+    private String lastName;
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    private LocalDateTime createdTime;
 
 }
