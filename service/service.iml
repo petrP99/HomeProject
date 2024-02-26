@@ -3,19 +3,19 @@
   <component name="FacetManager">
     <facet type="hibernate" name="Hibernate">
       <configuration>
-        <datasource-map />
+        <datasource-map>
+          <unit-entry name="hibernate.cfg.xml" value="348df733-e059-471a-8ddf-18ffde734514" />
+          <unit-entry name="src:main:resources:hibernate.cfg.xml" value="9461e5f2-8c24-4488-84d3-bec059cd1bf8" />
+          <unit-entry name="src:test:resources:hibernate.cfg.xml" value="9005eb28-8248-44b2-a7ae-dd9f3f8500f5" />
+          <unit-entry name="target:classes:hibernate.cfg.xml" value="9a36cb72-557a-4214-869a-1f5e3f2e0f21" />
+          <unit-entry name="target:test-classes:hibernate.cfg.xml" value="f99b8c5a-dde1-408a-b3ff-e4d079f009a2" />
+        </datasource-map>
         <naming-strategy-map />
         <deploymentDescriptor name="hibernate.cfg.xml" url="file://$MODULE_DIR$/src/main/resources/hibernate.cfg.xml" />
-      </configuration>
-    </facet>
-    <facet type="jpa" name="JPA">
-      <configuration>
-        <setting name="validation-enabled" value="true" />
-        <setting name="provider-name" value="Hibernate" />
-        <datasource-mapping>
-          <factory-entry name="service" value="4e3aa0e9-307e-49e8-856b-4038cd193529" />
-        </datasource-mapping>
-        <naming-strategy-map />
+        <deploymentDescriptor name="hibernate.cfg.xml" url="file://$MODULE_DIR$/src/test/resources/hibernate.cfg.xml" />
+        <deploymentDescriptor name="hibernate.cfg.xml" url="file://$MODULE_DIR$/target/classes/hibernate.cfg.xml" />
+        <deploymentDescriptor name="hibernate.cfg.xml" url="file://$MODULE_DIR$/target/test-classes/hibernate.cfg.xml" />
+        <deploymentDescriptor name="hibernate.cfg.xml" url="file://$MODULE_DIR$/../src/main/resources/hibernate.cfg.xml" />
       </configuration>
     </facet>
   </component>

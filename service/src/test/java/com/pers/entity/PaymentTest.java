@@ -3,9 +3,10 @@ package com.pers.entity;
 import com.pers.util.ExpireDateUtil;
 import com.pers.util.GenerateNumberCardUtil;
 import com.pers.util.HibernateUtil;
-import lombok.Cleanup;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -13,112 +14,158 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.setMaxStackTraceElementsDisplayed;
-import static org.junit.jupiter.api.Assertions.*;
 
 class PaymentTest {
 
-    @Test
-    void createPayment() {
-        session.beginTransaction();
-        session.persist(user);
-        session.persist(client);
-        session.persist(card);
-        session.getTransaction().commit();
+    private Session session;
 
-        session.persist(payment);
-
-        assertThat(payment).isNotNull();
+    @BeforeEach
+    void openSession() {
+        SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
+        this.session = sessionFactory.openSession();
+        session.getTransaction().begin();
     }
 
-    @Test
-    void updatePayment() {
-        session.getTransaction().begin();
-
-        payment.setStatus(Status.FAILED);
-
-        var currentStatus = payment.getStatus();
-
-        assertThat(currentStatus).isEqualTo(Status.FAILED);
-
+    @AfterEach
+    public void closeSession() {
         session.getTransaction().rollback();
     }
 
     @Test
-    void deletePayment() {
-        session.beginTransaction();
+    void createPayment() {
+        User user = User.builder()
+                .login("user1@gmail.com")
+                .password("123")
+                .role(Role.USER)
+                .build();
 
-        session.remove(payment);
-        session.getTransaction().commit();
+        Client client = Client.builder()
+                .user(user)
+                .balance(BigDecimal.valueOf(50000))
+                .firstName("Ivan")
+                .lastName("Ivanov")
+                .status(Status.ACTIVE)
+                .createdTime(LocalDateTime.now())
+                .build();
 
-        assertThat(payment).isNull();
+        Card card = Card.builder()
+                .client(client)
+                .cardNo(GenerateNumberCardUtil.generateNumber())
+                .balance(BigDecimal.valueOf(1000))
+                .createdDate(LocalDate.now())
+                .expireDate(ExpireDateUtil.calculateExpireDate())
+                .status(Status.ACTIVE)
+                .build();
+
+        Payment payment = Payment.builder()
+                .shopName("ReStore")
+                .amount(BigDecimal.valueOf(154))
+                .client(client)
+                .card(card)
+                .timeOfPay(LocalDateTime.now())
+                .status(Status.SUCCESS)
+                .build();
+
+        session.persist(user);
+        session.persist(client);
+        session.persist(card);
+        session.persist(payment);
+
+        var createdPayment = session.get(Payment.class, payment.getId());
+
+        assertThat(createdPayment).isNotNull();
     }
 
-    SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
-    Session session = sessionFactory.openSession();
+    @Test
+    void updatePayment() {
+        User user = User.builder()
+                .login("user1@gmail.com")
+                .password("123")
+                .role(Role.USER)
+                .build();
 
-    User user = User.builder()
-            .login("user1@gmail.com")
-            .password("123")
-            .role(Role.USER)
-            .build();
-    User user2 = User.builder()
-            .login("user2@gmail.com")
-            .password("123")
-            .role(Role.USER)
-            .build();
+        Client client = Client.builder()
+                .user(user)
+                .balance(BigDecimal.valueOf(50000))
+                .firstName("Ivan")
+                .lastName("Ivanov")
+                .status(Status.ACTIVE)
+                .createdTime(LocalDateTime.now())
+                .build();
 
-    Client client = Client.builder()
-            .userId(user)
-            .balance(BigDecimal.valueOf(50000))
-            .firstName("Ivan")
-            .lastName("Ivanov")
-            .status(Status.ACTIVE)
-            .createdTime(LocalDateTime.now())
-            .build();
+        Card card = Card.builder()
+                .client(client)
+                .cardNo(GenerateNumberCardUtil.generateNumber())
+                .balance(BigDecimal.valueOf(1000))
+                .createdDate(LocalDate.now())
+                .expireDate(ExpireDateUtil.calculateExpireDate())
+                .status(Status.ACTIVE)
+                .build();
 
-    Client client2 = Client.builder()
-            .userId(user2)
-            .balance(BigDecimal.valueOf(50000))
-            .firstName("Ivan")
-            .lastName("Ivanov")
-            .status(Status.ACTIVE)
-            .createdTime(LocalDateTime.now())
-            .build();
+        Payment payment = Payment.builder()
+                .shopName("ReStore")
+                .amount(BigDecimal.valueOf(154))
+                .client(client)
+                .card(card)
+                .timeOfPay(LocalDateTime.now())
+                .status(Status.SUCCESS)
+                .build();
 
-    Card card = Card.builder()
-            .clientId(client)
-            .cardNo(GenerateNumberCardUtil.generateNumber())
-            .balance(BigDecimal.valueOf(1000))
-            .createdDate(LocalDate.now())
-            .expireDate(ExpireDateUtil.calculateExpireDate())
-            .status(Status.ACTIVE)
-            .build();
+        session.persist(user);
+        session.persist(client);
+        session.persist(card);
+        session.persist(payment);
+        payment.setStatus(Status.FAILED);
+        session.merge(payment);
 
-    Card card2 = Card.builder()
-            .clientId(client2)
-            .cardNo(GenerateNumberCardUtil.generateNumber())
-            .balance(BigDecimal.valueOf(1000))
-            .createdDate(LocalDate.now())
-            .expireDate(ExpireDateUtil.calculateExpireDate())
-            .status(Status.ACTIVE)
-            .build();
+        var currentStatus = payment.getStatus();
 
-    Payment payment = Payment.builder()
-            .shopName("ReStore")
-            .amount(BigDecimal.valueOf(154))
-            .payByClientId(client)
-            .payByCardNo(card)
-            .timeOfPay(LocalDateTime.now())
-            .status(Status.SUCCESS)
-            .build();
+        assertThat(currentStatus).isEqualTo(Status.FAILED);
+    }
 
-    Payment payment2 = Payment.builder()
-            .shopName("ReStore")
-            .amount(BigDecimal.valueOf(154))
-            .payByClientId(client2)
-            .payByCardNo(card2)
-            .timeOfPay(LocalDateTime.now())
-            .status(Status.SUCCESS)
-            .build();
+    @Test
+    void deletePayment() {
+        User user = User.builder()
+                .login("user1@gmail.com")
+                .password("123")
+                .role(Role.USER)
+                .build();
+
+        Client client = Client.builder()
+                .user(user)
+                .balance(BigDecimal.valueOf(50000))
+                .firstName("Ivan")
+                .lastName("Ivanov")
+                .status(Status.ACTIVE)
+                .createdTime(LocalDateTime.now())
+                .build();
+
+        Card card = Card.builder()
+                .client(client)
+                .cardNo(GenerateNumberCardUtil.generateNumber())
+                .balance(BigDecimal.valueOf(1000))
+                .createdDate(LocalDate.now())
+                .expireDate(ExpireDateUtil.calculateExpireDate())
+                .status(Status.ACTIVE)
+                .build();
+
+        Payment payment = Payment.builder()
+                .shopName("ReStore")
+                .amount(BigDecimal.valueOf(154))
+                .client(client)
+                .card(card)
+                .timeOfPay(LocalDateTime.now())
+                .status(Status.SUCCESS)
+                .build();
+
+        session.persist(user);
+        session.persist(client);
+        session.persist(card);
+        session.persist(payment);
+        session.remove(payment);
+
+        var paymentId = session.get(Payment.class, payment.getId());
+
+        assertThat(paymentId).isNull();
+    }
 }
